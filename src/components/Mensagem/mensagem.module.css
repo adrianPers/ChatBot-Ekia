@@ -1,0 +1,31 @@
+
+.mensagemTexto{
+  background-color: #1989bd;
+  padding: 10px;
+  border-radius: 30px;
+  width: fit-content;
+  position: relative;
+
+}
+
+.mensagemCliente{
+  /* background-color: blue; */
+}
+
+.caixaBotoes{
+    background-color: #37677e;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    border-radius: 20px;
+    gap: 5px;
+    width: fit-content;
+    
+    /* align-items: flex-start; */
+}
+
+.caixaBotoes button{
+    padding: 5px;
+    border-radius: 5px;
+    border: 0px;
+}
