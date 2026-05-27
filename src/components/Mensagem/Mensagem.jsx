@@ -1,7 +1,7 @@
 
 import styles from "./mensagem.module.css";
 
-const Mensagem = ({ dados, opcaoEscolida }) => {
+const Mensagem = ({ dados, funcoes }) => {
     if (dados.tipo == "texto") {
         return (
 
@@ -13,6 +13,8 @@ const Mensagem = ({ dados, opcaoEscolida }) => {
                         float: dados.autor == "bot" || dados.autor == "atendente" ? "left" : "right",
                     }}>
                     {dados.conteudo}
+                    <br />
+                    <span>{dados.hora}</span>
                 </p>
             </div>
         )
@@ -20,11 +22,12 @@ const Mensagem = ({ dados, opcaoEscolida }) => {
         return (
             <div className={styles.boxMensagem}>
                 <div className={styles.caixaBotoes}>
-                    <p>{dados.conteudo}</p>
+                    <p>{dados?.conteudo}</p>
                     {dados.botoes.map((botao, index) => (
                         <button
                             onClick={(e) => {
-                                opcaoEscolida(e.target.innerHTML, "cliente");
+                                funcoes[0](e.target.innerHTML, "cliente");
+                                funcoes[1](false);
                                 botao.acao();
                                 [...e.target.parentElement.children].map(
                                     btn => btn.disabled = true
