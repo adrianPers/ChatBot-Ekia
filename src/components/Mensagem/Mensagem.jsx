@@ -1,5 +1,6 @@
 
 import styles from "./mensagem.module.css";
+import produtos from "../../produtos";
 
 const Mensagem = ({ dados, funcoes }) => {
     if (dados.tipo == "texto") {
@@ -18,7 +19,7 @@ const Mensagem = ({ dados, funcoes }) => {
                 </p>
             </div>
         )
-    } else {
+    } else if (dados.tipo == "botoes") {
         return (
             <div className={styles.boxMensagem}>
                 <div className={styles.caixaBotoes}>
@@ -40,6 +41,24 @@ const Mensagem = ({ dados, funcoes }) => {
                 </div>
             </div>
         )
+    } else {
+        return (
+            <div className={styles.boxProdutos}>
+
+                {produtos.map((produto) => (
+                    <div className={styles.produto} key={produto.id}
+                    onClick={funcoes[2](produto, )}>
+                        <img src={produto.img} alt="produto" />
+                        <p className={styles.nome}>{produto.nome}</p>
+                        <p >Preço : {produto.preco}</p>
+                        <p >Tamanhos : {produto.tamanhos}</p>
+                        <p >Material : {produto.material}</p>
+                    </div>
+                ))}
+
+            </div>
+        )
+
     }
 }
 

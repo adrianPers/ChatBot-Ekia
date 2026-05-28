@@ -4,6 +4,7 @@ import Mesagem from './components/Mensagem/Mensagem';
 import { getItems, setItens, updateItems } from './services/localStore';
 import { socket } from './socket';
 import IconCliente from "./assets/iconCliente.svg"
+import produtos from './produtos';
 const App = () => {
 
   const [mensagens, setMensagens] = useState([]);
@@ -12,9 +13,18 @@ const App = () => {
   const idConversa = useRef(null);
   const boxConversa = useRef(null);
   const boxInput = useRef(null);
+  const carrinho = useRef([]);
   const [nome, setNome] = useState("");
 
   let status = useRef(0);
+
+  const adicionarAoCarrinho  = (produto, qnt) => {
+    carrinho.current.push({
+      nome : produto.nome,
+      quantidade : qnt,
+      preco : produto.preco
+    })
+  }
 
 
 
@@ -28,6 +38,8 @@ const App = () => {
       top: boxConversa.current.scrollHeight,
       behavior: "smooth"
     });
+
+    // localStorage.clear();
 
   }, [mensagens]);
 
@@ -65,7 +77,7 @@ const App = () => {
     return () => { socket.off("receber-mensagem"); };
 
   }, []);
-  
+
 
   const enviarParaAtendente = (texto, autor) => {
     const mensagem = {
@@ -119,6 +131,10 @@ const App = () => {
     // boxInput.current.children[1].disabled = value;
   }
 
+  const emviarProdutos = () => {
+
+  }
+
   const enviarCaixaBotoes = (dados) => {
 
     const mensagem = {
@@ -139,10 +155,11 @@ const App = () => {
     texto: "Como posso te ajudar",
     botoes: [
       {
-        conteudo: "Ver Produtos"
+        conteudo: "Ver Produtos",
+        acao: () => handlePodutos()
       }, {
         conteudo: "problemas com a compra",
-        acao : () => enviarCaixaBotoes(conteudoMenuProblemas)
+        acao: () => enviarCaixaBotoes(conteudoMenuProblemas)
       }, {
         conteudo: "Sobre a Loja",
         acao: () => enviarCaixaBotoes(conteudoMenuInfo)
@@ -158,14 +175,28 @@ const App = () => {
     botoes: [
       {
         conteudo: "Cancelar compra",
-        acao : () => {status.current=3211; responder()}
+        acao: () => { status.current = 3211; responder() }
       }, {
         conteudo: "Relatar Problema",
-        acao : () => {status.current=3212; responder()}
+        acao: () => { status.current = 3212; responder() }
       }, {
-        conteudo: "Falar com atendente"
+        conteudo: "Falar com atendente",
+        acao : () => iniciarChatOnline()
       }
     ]
+  }
+
+  const handlePodutos = () => {
+    setTimeout(() => setMensagens((prev) => [...prev, { tipo: "produto" }]), 1000);
+    enviarCaixaBotoes({
+      texto: "click em algum produto para adiciona-lo ao carrinho ou aperte em cancelar para voltar ao menu",
+      botoes: [
+        {
+          conteudo: "Cancelar",
+          acao: () => enviarCaixaBotoes(conteudoMenuInicial)
+        }]
+    });
+
   }
 
   const getHora = () => {
@@ -185,7 +216,7 @@ const App = () => {
     console.log(idConversa.current + "<=");
 
     socket.emit("entrar-conversa", {
-      conversaId : idConversa.current,
+      conversaId: idConversa.current,
       nome
     });
 
@@ -230,7 +261,8 @@ const App = () => {
         conteudo: "Outras informações",
         acao: () => enviarCaixaBotoes(conteudoMenuInfo)
       }, {
-        conteudo: "Falar com atente"
+        conteudo: "Falar com atente",
+        acao: () => iniciarChatOnline()
       }, {
         conteudo: "Encerrar conversa"
       }
@@ -255,11 +287,14 @@ const App = () => {
   }
 
 
-  const HandleEnvio = () => {   
+  const HandleEnvio = () => {
     if (!value.trim()) return;
     addMensagemTexto(value, "cliente");
     setValue("");
-    enviarMensagem();
+    if (modoAtendimento == "bot") {
+      console.log(modoAtendimento);
+      responder();
+    }
   }
 
   // useEffect(() => {
@@ -267,63 +302,89 @@ const App = () => {
   //   enviarCaixaBotoes(conteudoMenuInicial);
   // }, []);
 
-  const enviarMensagem = () => {
-    if(!(value.trim()))return;
-    responder();
-  }
 
   const responder = () => {
-    switch(status.current){
-      case 0 : 
-        addMensagemTexto("Olá sou Ekia asistemte da loja Eko")
+    if (!(value.trim())) return;
+    switch (status.current) {
+      case 0:
+        addMensagemTexto("Olá sou Ekia assistente da loja Eko")
         enviarCaixaBotoes(conteudoMenuInicial);
         console.log(status.current);
-      break;
-      case 3211 : 
+        break;
+      case 3211:
         addMensagemTexto("Informe seu nome");
         status.current = 32111;
         console.log(status.current);
-      break;
-      case 3212: 
+        break;
+      case 3212:
         addMensagemTexto("Informe seu nome");
         status.current = 32121;
         console.log(status.current);
-      break;
-      case 32111 : 
+        break;
+      case 32111:
         addMensagemTexto("Me informe o nome do produto comprado");
         status.current = 32112;
         console.log(status.current);
-      break;
-      case 32121: 
+        break;
+      case 32121:
         addMensagemTexto("Me informe o nome do produto comprado");
         status.current = 32122;
         console.log(status.current);
-      break;
-      case 32112 : 
+        break;
+      case 32112:
         addMensagemTexto("Me informe o motivo do cancelamento");
         status.current = 32113;
         console.log(status.current);
-      break;
-      case 32122: 
+        break;
+      case 32122:
         addMensagemTexto("Relate o problema");
         status.current = 32123;
         console.log(status.current);
-      break;
-      case 32113 : 
-        gearResumo();
-      break;
-      case 32123: 
-        gearResumo();
-      break;
+        break;
+      case 32113:
+        iniciarChatOnline()
+        
+        status.current = 32114;
+        break;
+      case 32123:
+        iniciarChatOnline()
+        status.current = 32134;
+        break;
+      case 311:
+        addMensagemTexto("Qual a quantidade que deseja compra?");
+        status.current = 312;
+        break;
+      case 312:
+        addMensagemTexto("Qual tamanho do produto?");
+        status.current = 314;
+        break;
+      case 314:
+        enviarCaixaBotoes({
+          texto: "Deseja adicionar mais coisas ao carinho?",
+          botoes: [
+            {
+              conteudo: "Sim",
+             acao: () => handlePodutos()
+            }, {
+              conteudo: "Não",
+              acao: () => ds
+            },
+          ]
 
-    } 
+        })
+        break;
+      case 313:
+        break;
+
+
+    }
   }
 
-  const gearResumo = ()  => {
+  const gearResumo = () => {
 
-      // addMensagemTexto(`Solicitação de atendomento: ${mensagens[length-4].conteudo}`);
-      // addMensagemTexto(`Clente : ${mensagens[length-2].conteudo}`);
-      // addMensagemTexto(`Clente : ${mensagens[length].conteudo}`)
+    addMensagemTexto(`Solicitação de atendomento: ${mensagens[mensagens.length - 6].conteudo}`);
+    addMensagemTexto(`Cliente : ${mensagens[mensagens.length - 4].conteudo}`);
+    addMensagemTexto(`Motivo: ${mensagens[mensagens.length - 1].conteudo}`);
 
   }
 
@@ -336,7 +397,7 @@ const App = () => {
 
 
       <header className={styles.header}>
-        <p>EKo</p>
+        <p>Eko</p>
 
         <div>
 
@@ -353,9 +414,11 @@ const App = () => {
       </header>
 
       <div className={styles.boxConversa} ref={boxConversa}>
+
+
         {mensagens.map(
           (mensagem, index) => (
-            <Mesagem key={index} dados={mensagem} funcoes={[addMensagemTexto, desativarInput]} />
+            <Mesagem key={index} dados={mensagem} funcoes={[addMensagemTexto, desativarInput, () =>{adicionarAoCarrinho(mensagem)}]} />
           )
         )}
         <div className={styles.teste}></div>
