@@ -270,9 +270,9 @@ const App = () => {
   };
 
   const textosInformativos = [
-    "Funciona quando nois que",
-    "É uma loja legal",
-    "Gostamos de tartarugas"
+    "Horário de funcionamento: O horário de funcionamento é das 8:00 até as 20:00 Formas de pagamento: No momento, aceitamos apenas com pix Entregas: AS entregas são feitas pelos correios para lugares mais distantes e de uber para clientes de jandira.",
+    "Nossa missão é promover a sustentabilidade por meio de produtos de qualidade, utilizando materiais ecológicos e incentivando um consumo mais consciente e responsável. Nossos valores são: Respeito ao meio ambiente, utilização de produtos sustentáveis/ duráveis e auxiliar na propagação do consumo consciente.",
+    "A Eko promove a sustentabilidade escolhendo materiais mais responsáveis, como tecidos de linho e algodão. Também priorizamos a qualidade das peças, para que durem mais e incentivem um consumo consciente. Além disso, usamos embalagens sustentáveis e livres de plástico no envio dos pedidos, reduzindo nosso impacto no meio ambiente."
   ];
 
   // caixa de boteos do fim do fluxo informativo
